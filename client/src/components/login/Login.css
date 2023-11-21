@@ -1,0 +1,122 @@
+body {
+  background: url("../../../src/assets/images/societies.jpg") no-repeat center center fixed;
+  background-size:cover;
+  font-family: Arial, sans-serif;
+}
+
+
+
+
+.container {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  /* padding: 20px; */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  margin: 20vh auto;
+  width:max-content;
+}
+
+.form-div {
+  z-index: 1;
+}
+
+.form-div,
+.button-div {
+  transition: 0.5s ease-out;
+}
+
+form {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+}
+
+input,
+button {
+  margin: 5px;
+}
+
+/* Add the rest of your CSS styles */
+
+/* For the menu and menu trigger button */
+
+.menu-container,
+.menu-trigger,
+.menu {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+
+.menu-container {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  width: 300px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+}
+
+.menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  border-bottom: 1px solid #dddddd;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: #333333;
+  padding: 15px 20px;
+  display: block;
+}
+
+.menu-trigger {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  border: none;
+  vertical-align: middle;
+  transition: box-shadow 0.4s ease;
+}
+
+.menu-trigger:hover {
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+
+.menu-trigger span {
+  font-weight: 700;
+  vertical-align: middle;
+  font-size: 14px;
+  margin: 0 10px;
+}
+
+.menu-trigger img {
+  border-radius: 90px;
+}
