@@ -6,73 +6,7 @@ import axios from "axios";
 
 import Table from "../components/table/Table";
 
-const availableTime = {
-  head: ["From", "To", "People Free"],
-  body: [
-    {
-      starttime: "9:00 AM",
-      endtime: "10:00 AM",
-      count: "2",
-    },
-    {
-      starttime: "10:00 AM",
-      endtime: "11:00 AM",
-      count: "1",
-    },
-    {
-      starttime: "11:00 AM",
-      endtime: "12:00 PM",
-      count: "3",
-    },
-    {
-      starttime: "12:00 PM",
-      endtime: "1:00 PM",
-      count: "2",
-    },
-    {
-      starttime: "1:00 PM",
-      endtime: "2:00 PM",
-      count: "6",
-    },
-  ],
-};
 
-const updateEvent = async (id, status) => {
-  await axios.put("/event/updateevent", {
-    id: id,
-    status: status,
-  });
-};
-
-const renderHead = (item, index) => <th key={index}>{item}</th>;
-
-const renderAllBody = (item, index) => (
-  <tr key={index}>
-    <td>{item.by}</td>
-    <td>{item.topic}</td>
-    <td>{item.description}</td>
-    <td>{moment(item.stime).format("MMMM Do YYYY, h:mm:ss a")}</td>
-    <td>{moment(item.etime).format("MMMM Do YYYY, h:mm:ss a")}</td>
-    <td>
-      <Checkbox
-        checked={item.status && true}
-        onChange={(e) => {
-          e.preventDefault();
-          updateEvent(item.id, item.status);
-          item.status = !item.status;
-        }}
-      />
-    </td>
-  </tr>
-);
-
-const renderAvailableBody = (item, index) => (
-  <tr key={index}>
-    <td>{item.starttime}</td>
-    <td>{item.endtime}</td>
-    <td>{item.count}</td>
-  </tr>
-);
 
 const Events = () => {
   const [head] = useState([
@@ -81,6 +15,7 @@ const Events = () => {
     "Description",
     "Start Time",
     "End Time",
+    "Event Type",
     "Status",
   ]);
   const [body, setBody] = useState([]);
@@ -93,6 +28,14 @@ const Events = () => {
   const [date, setDate] = useState(new Date());
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
+  const [eventType,setEventType]=useState("");
+
+
+  const handleEventTypeChange = async (event) => {
+    setEventType(event.target.value);
+  };
+
+
 
   useEffect(() => {
     const loginUser = async () => {
@@ -100,11 +43,45 @@ const Events = () => {
     };
     loginUser();
 
+     
+    getEvents();
+  }, [show]);
+  const updateEvent = async (id, status) => {
+    await axios.put("/event/updateevent", {
+      id: id,
+      status: status,
+    });
+    getEvents();
+  };
+  
+  const renderHead = (item, index) => <th key={index}>{item}</th>;
+  
+  const renderAllBody = (item, index) => (
+    <tr key={index}>
+      <td>{item.by}</td>
+      <td>{item.topic}</td>
+      <td>{item.description}</td>
+      <td>{moment(item.stime).format("MMMM Do YYYY, h:mm:ss a")}</td>
+      <td>{moment(item.etime).format("MMMM Do YYYY, h:mm:ss a")}</td>
+      <td>{item.eventType}</td>
+      <td>
+        <Checkbox
+          checked={item.status && true}
+          onChange={(e) => {
+            e.preventDefault();
+            updateEvent(item.id, item.status);
+            item.status = !item.status;
+          }}
+        />
+      </td>
+    </tr>
+  );
+  
     const getEvents = async () => {
       const tempBody = [];
       const { data } = await axios.get("/event/getevents");
       data?.forEach((event) => {
-        if (event.by === user?.data?.userName) {
+        // if (event.by === user?.data?.userName) {
           const oneEvent = {
             id: event._id,
             by: event.by,
@@ -112,15 +89,16 @@ const Events = () => {
             description: event.description,
             stime: event.stime,
             etime: event.etime,
+            eventType:event.eventType,
             status: event.status,
           };
           tempBody.push(oneEvent);
-        }
+        // }
       });
       setBody(tempBody);
     };
-    getEvents();
-  }, [show]);
+
+ 
 
   const pushEvent = async (by, topic, description, stime, etime, status) => {
     const data = await axios.post("/event/addevent", {
@@ -129,6 +107,7 @@ const Events = () => {
       description: description,
       stime: stime,
       etime: etime,
+      eventType:eventType,
       status: status,
     });
     setError(data.data.message);
@@ -167,20 +146,7 @@ const Events = () => {
           </div>
         )}
       </div>
-      <div className="card">
-        <h2>Available Time Slots</h2>
-        <br></br>
-        <div className="card">
-          <div className="card__body">
-            <Table
-              headData={availableTime.head}
-              renderHead={(item, index) => renderHead(item, index)}
-              bodyData={availableTime.body}
-              renderBody={(item, index) => renderAvailableBody(item, index)}
-            />
-          </div>
-        </div>
-      </div>
+    
       <div className="card">
         <h2>Schedule An Event</h2>
         <br></br>
@@ -221,14 +187,15 @@ const Events = () => {
                 <br></br>
                 <Calendar value={date} onChange={setDate} />
                 <p>
-                  Current selected date is{" "}
+                  Current selected date is
                   <b>{moment(date).format("MMMM Do YYYY")}</b>
                 </p>
               </div>
             </div>
           </div>
-          <div className="col-3">
-            <div className="card">
+          <div className="col-3 row">
+         <div className="col-12">
+         <div className="card">
               <h3>Select a Time!</h3>
               <br></br>
               <form>
@@ -255,6 +222,23 @@ const Events = () => {
                 />
               </form>
             </div>
+         </div>
+         <div className="col-12">
+         <div className="col-12">
+            <div className="card">
+              <h3>Select Event Type</h3>
+              <br />
+              <form>
+                <label htmlFor="eventType">Choose an Event type:</label>
+                <select onChange={handleEventTypeChange} id="eventType" name="eventType">
+                  <option value="Seminar">Seminar</option>
+                  <option value="Webinar">Webinar</option>
+                  <option value="Annual dinner">Annual Dinner</option>
+                </select>
+              </form>
+           </div>
+          </div>
+         </div>
           </div>
         </div>
         <button

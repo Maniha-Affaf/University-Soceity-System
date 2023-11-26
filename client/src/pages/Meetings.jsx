@@ -2,77 +2,10 @@ import React, { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import moment from "moment";
 import { Checkbox } from "@mui/material";
+import ReactDOM from "react-dom";
 import axios from "axios";
 
 import Table from "../components/table/Table";
-
-const availableTime = {
-  head: ["From", "To", "People Free"],
-  body: [
-    {
-      starttime: "9:00 AM",
-      endtime: "10:00 AM",
-      count: "2",
-    },
-    {
-      starttime: "10:00 AM",
-      endtime: "11:00 AM",
-      count: "1",
-    },
-    {
-      starttime: "11:00 AM",
-      endtime: "12:00 PM",
-      count: "3",
-    },
-    {
-      starttime: "12:00 PM",
-      endtime: "1:00 PM",
-      count: "2",
-    },
-    {
-      starttime: "1:00 PM",
-      endtime: "2:00 PM",
-      count: "6",
-    },
-  ],
-};
-
-const updateMeet = async (id, status) => {
-  await axios.put("/meet/updatemeet", {
-    id: id,
-    status: status,
-  });
-};
-
-const renderHead = (item, index) => <th key={index}>{item}</th>;
-
-const renderAllBody = (item, index) => (
-  <tr key={index}>
-    <td>{item.by}</td>
-    <td>{item.topic}</td>
-    <td>{item.description}</td>
-    <td>{moment(item.stime).format("MMMM Do YYYY, h:mm:ss a")}</td>
-    <td>{moment(item.etime).format("MMMM Do YYYY, h:mm:ss a")}</td>
-    <td>
-      <Checkbox
-        checked={item.status && true}
-        onChange={(e) => {
-          e.preventDefault();
-          updateMeet(item.id, item.status);
-          item.status = !item.status;
-        }}
-      />
-    </td>
-  </tr>
-);
-
-const renderAvailableBody = (item, index) => (
-  <tr key={index}>
-    <td>{item.starttime}</td>
-    <td>{item.endtime}</td>
-    <td>{item.count}</td>
-  </tr>
-);
 
 const Meetings = () => {
   const [head] = useState([
@@ -81,7 +14,9 @@ const Meetings = () => {
     "Description",
     "Start Time",
     "End Time",
+    "Meet Type",
     "Status",
+
   ]);
   const [body, setBody] = useState([]);
   const [user, setUser] = useState({});
@@ -93,6 +28,15 @@ const Meetings = () => {
   const [date, setDate] = useState(new Date());
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
+  const [meetType,setMeetType]=useState("");
+
+
+
+
+  const handleMeetTypeChange = async (event) => {
+    setMeetType(event.target.value);
+  };
+
 
   useEffect(() => {
     const loginUser = async () => {
@@ -100,29 +44,254 @@ const Meetings = () => {
     };
     loginUser();
 
-    const getMeets = async () => {
-      const tempBody = [];
-      const { data } = await axios.get("/meet/getmeets");
-      data?.forEach((meet) => {
-        if (meet.by === user?.data?.userName) {
-          const oneMeet = {
-            id: meet._id,
-            by: meet.by,
-            topic: meet.topic,
-            description: meet.description,
-            stime: meet.stime,
-            etime: meet.etime,
-            status: meet.status,
-          };
-          tempBody.push(oneMeet);
-        }
-      });
-      setBody(tempBody);
-    };
+   
     getMeets();
   }, [show]);
 
-  const pushMeet = async (by, topic, description, stime, etime, status) => {
+  const renderHead = (item, index) => <th key={index}>{item}</th>;
+
+
+
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [editedDetails, setEditedDetails] = useState({
+    id: '',
+    by: '',
+    topic: '',
+    description: '',
+    meetType: '',
+    stime: '',
+    etime: '',
+  });
+
+
+
+
+  const handleEdit = () => {
+    // Perform your edit logic here
+    // For example, you can call your updateMeet function
+    updateMeet(
+      editedDetails.id,
+      editedDetails.by,
+      editedDetails.topic,
+      editedDetails.description,
+      editedDetails.meetType,
+      editedDetails.stime,
+      editedDetails.etime
+    );
+
+    // Close the modal after editing
+    closeModal();
+  };
+
+
+
+
+
+
+  const renderAllBody = (item, index) => (
+    <tr key={index}>
+      <td>{item.by}</td>
+      <td>{item.topic}</td>
+      <td>{item.description}</td>
+      <td>{moment(item.stime).format("MMMM Do YYYY, h:mm:ss a")}</td>
+      <td>{moment(item.etime).format("MMMM Do YYYY, h:mm:ss a")}</td>
+      <td>{item.meetType}</td>
+      <td>
+        <Checkbox
+          checked={item.status && true}
+          onChange={(e) => {
+            e.preventDefault();
+            updateMeet(item.id, item.status,item.topic, item.description, item.meetType,item.stime,item.etime);
+            item.status = !item.status;
+          }}
+        />
+      </td>
+      <td>
+        <button
+         onClick={(e)=>{
+          console.log("button clicked");
+        e.preventDefault();
+        openModal(item.id, item.by, item.topic, item.description, item.meetType, item.stime, item.etime);
+         }}>EDIT </button></td>
+    </tr>
+  );
+
+
+  const Modal = ({ isModalOpen, closeModal, handleEdit, editedDetails }) => {
+    return ReactDOM.createPortal(
+      isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            {/* Your form to edit details */}
+            {/* Populate the form with editedDetails */}
+            <label>
+              Topic:
+              <input
+                type="text"
+                value={editedDetails.topic}
+                onChange={(e) =>
+                  setEditedDetails({
+                    ...editedDetails,
+                    topic: e.target.value,
+                  })
+                }
+              />
+            </label>
+            {/* Repeat similar blocks for other fields */}
+            <button onClick={handleEdit}>Save Changes</button>
+            <button onClick={closeModal}>Cancel</button>
+          </div>
+        </div>
+      ),
+      document.body
+    );
+  };
+
+
+  const openModal = (id, by, topic, description, meetType, stime, etime) => {
+    setEditedDetails({
+      id,
+      by,
+      topic,
+      description,
+      meetType,
+      stime,
+      etime,
+    });
+    setModalOpen(true);
+    console.log('Modal opened'); // Add this line
+  };
+  
+  const closeModal = () => {
+    setModalOpen(false);
+    console.log('Modal closed'); // Add this line
+  };
+
+
+  {isModalOpen && (
+    <div className="modal">
+      <div className="modal-content">
+        {/* Your form to edit details */}
+        {/* Populate the form with editedDetails */}
+        <label>
+          Topic:
+          <input type="text" value={editedDetails.topic} onChange={(e) => setEditedDetails({ ...editedDetails, topic: e.target.value })} />
+        </label>
+
+        <label>
+        Topic:
+        <input 
+          type="text" 
+          value={editedDetails.topic} 
+          onChange={(e) => setEditedDetails({ ...editedDetails, topic: e.target.value })} 
+        />
+      </label>
+
+      <label>
+        Description:
+        <input 
+          type="text" 
+          value={editedDetails.description} 
+          onChange={(e) => setEditedDetails({ ...editedDetails, description: e.target.value })} 
+        />
+      </label>
+
+      <label>
+        Meet Type:
+        <input 
+          type="text" 
+          value={editedDetails.meetType} 
+          onChange={(e) => setEditedDetails({ ...editedDetails, meetType: e.target.value })} 
+        />
+      </label>
+
+      <label>
+        Start Time:
+        <input 
+          type="text" 
+          value={editedDetails.stime} 
+          onChange={(e) => setEditedDetails({ ...editedDetails, stime: e.target.value })} 
+        />
+      </label>
+
+      <label>
+        End Time:
+        <input 
+          type="text" 
+          value={editedDetails.etime} 
+          onChange={(e) => setEditedDetails({ ...editedDetails, etime: e.target.value })} 
+        />
+      </label>
+    
+        
+        <button onClick={handleEdit}>Save Changes</button>
+        <button onClick={closeModal}>Cancel</button>
+      </div>
+    </div>
+  )}
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const updateMeet = async (id, status,topic,description,meetType,stime,etime) => {
+
+    await axios.put("/meet/updatemeet", {
+      id: id,
+      status: status,
+      Topic :topic,
+      Description: description,
+      MeetType: meetType,
+      Starttime:stime,
+      endtime:etime
+
+
+    });
+    getMeets();
+  };
+
+
+
+
+
+
+
+  const getMeets = async () => {
+    const tempBody = [];
+    const { data } = await axios.get("/meet/getmeets");
+    data?.forEach((meet) => {
+
+        const oneMeet = {
+          id: meet._id,
+          by: meet.by,
+          topic: meet.topic,
+          description: meet.description,
+          stime: meet.stime,
+          etime: meet.etime,
+          status: meet.status,
+          meetType:meet.meetType
+        };
+        tempBody.push(oneMeet);
+      // }
+    });
+    setBody(tempBody);
+  };
+  const pushMeet = async (by, topic, description, stime, etime, status,meetType) => {
+    console.log(meetType);
     const data = await axios.post("/meet/addmeet", {
       by: by,
       topic: topic,
@@ -130,6 +299,7 @@ const Meetings = () => {
       stime: stime,
       etime: etime,
       status: status,
+      meetType:meetType,
     });
     setError(data.data.message);
   };
@@ -167,20 +337,7 @@ const Meetings = () => {
           </div>
         )}
       </div>
-      <div className="card">
-        <h2>Available Time Slots</h2>
-        <br></br>
-        <div className="card">
-          <div className="card__body">
-            <Table
-              headData={availableTime.head}
-              renderHead={(item, index) => renderHead(item, index)}
-              bodyData={availableTime.body}
-              renderBody={(item, index) => renderAvailableBody(item, index)}
-            />
-          </div>
-        </div>
-      </div>
+      
       <div className="card">
         <h2>Schedule A Meeting</h2>
         <br></br>
@@ -214,7 +371,7 @@ const Meetings = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-9">
+          <div className="col-8">
             <div className="card">
               <div className="inputs">
                 <h3>Select a Date!</h3>
@@ -227,7 +384,12 @@ const Meetings = () => {
               </div>
             </div>
           </div>
-          <div className="col-3">
+
+        <div className="col-4">
+        <div className="row">
+          
+
+          <div className="col-12">
             <div className="card">
               <h3>Select a Time!</h3>
               <br></br>
@@ -256,7 +418,23 @@ const Meetings = () => {
               </form>
             </div>
           </div>
+          <div className="col-12">
+            <div className="card">
+              <h3>Select Meeting Type</h3>
+              <br />
+              <form>
+                <label htmlFor="meetingType">Choose a meeting type:</label>
+                <select onChange={handleMeetTypeChange} id="meetingType" name="meetingType">
+                  <option value="onsite">Onsite</option>
+                  <option value="online">Online</option>
+                </select>
+              </form>
+           </div>
+          </div>
+          </div>
         </div>
+        </div>
+        
         <button
           className="button-primary"
           onClick={(e) => {
@@ -288,7 +466,8 @@ const Meetings = () => {
                     description,
                     sdatetime.toISOString(),
                     edatetime.toISOString(),
-                    status
+                    status,
+                    meetType
                   );
                 } catch {
                   setError("Something went Wrong!");

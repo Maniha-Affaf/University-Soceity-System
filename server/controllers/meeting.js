@@ -17,7 +17,8 @@ const addMeeting = async (req, res) => {
   const description = req.body.description;
   const stime = req.body.stime;
   const etime = req.body.etime;
-  const status = false;
+  const status = req.body.status;
+  const meetType=req.body.meetType;
   const user = await UserModel.findOne({ userMail: req.body.by });
   //   console.log(user);
   if (user.userRole == "Team Member") {
@@ -32,6 +33,7 @@ const addMeeting = async (req, res) => {
     stime: stime,
     etime: etime,
     status: status,
+    meetType:meetType,
   });
 
   await meet.save((err, doc) => {
@@ -45,21 +47,81 @@ const addMeeting = async (req, res) => {
   });
 };
 
+// const updateMeeting = async (req, res) => {
+//   await MeetingModel.updateOne(
+//     { _id: req.body.id },
+//     { status: !req.body.status },
+//     (err, doc) => {
+//       if (err) {
+//         return console.log(err + " 🤐!");
+//       }
+//       console.log("Meeting completed Woohoo 🎆!");
+//       return res.status(200).send({ message: "Meeting completed Woohoo 🎆!" });
+//     }
+//   ).clone();
+// };
+
+// const updateMeeting = async (req, res) => {
+//   const { id, status, Topic, Description, MeetType, Starttime, endtime } = req.body;
+
+//   try {
+//     const result = await MeetingModel.updateOne(
+//       { _id: id },
+//       {
+//         $set: {
+//           status: status,
+//           topic: Topic,
+//           description: Description,
+//           meetType: MeetType,
+//           starttime: Starttime,
+//           endtime: endtime
+//         }
+//       }
+//     );
+
+//     if (result.nModified > 0) {
+//       console.log("Meeting edited Woohoo 🎆!");
+//       return res.status(200).send({ message: "Meeting edited Woohoo 🎆!" });
+//     } else {
+//       console.log("Meeting not found or no modifications.");
+//       return res.status(404).send({ message: "Meeting not found or no modifications." });
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send({ message: "Internal Server Error" });
+//   }
+// };
+
+
 const updateMeeting = async (req, res) => {
-  await MeetingModel.updateOne(
-    { _id: req.body.id },
-    { status: !req.body.status },
-    (err, doc) => {
-      if (err) {
-        return console.log(err + " 🤐!");
+  const id = req.body.id;
+  const by = req.body.by;
+  const topic = req.body.topic;
+  const description = req.body.description;
+  const stime = req.body.stime;
+  const etime = req.body.etime;
+  const status = req.body.status;
+  const meetType = req.body.meetType;
+
+   await MeetingModel.updateOne(
+      { _id: req.body.id },
+      { data:{meetType,status,etime,stime,description,topic,by}},
+      (err, doc) => {
+        if (err) {
+          return console.log(err + " 🤐!");
+        }
+        console.log("Meeting completed Woohoo 🎆!");
+        return res.status(200).send({ message: "Meeting completed Woohoo 🎆!" });
       }
-      console.log("Meeting completed Woohoo 🎆!");
-    }
-  ).clone();
+    ).clone();
+
 };
+
+
 
 module.exports = {
   getMeetings,
   addMeeting,
   updateMeeting,
+
 };

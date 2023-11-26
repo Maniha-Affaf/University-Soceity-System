@@ -21,6 +21,10 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    eventType:{
+        type:String,
+        required:true
+    },
     status: {
         type: Boolean,
         required: true

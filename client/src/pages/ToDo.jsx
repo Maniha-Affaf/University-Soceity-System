@@ -5,7 +5,7 @@ import axios from 'axios'
 import { Checkbox } from '@mui/material'
 
 import Table from '../components/table/Table'
-
+const ToDo = () => {
 const updateTodo = async (id, status) => {
     await axios.put(
         '/todo/updatetodo', {
@@ -13,6 +13,7 @@ const updateTodo = async (id, status) => {
         status: status
     }
     )
+    getTodos()
 }
 
 const renderToDoHead = (item, index) => (
@@ -50,7 +51,7 @@ const pushToDo = async (mail, task, description, status, duedate) => {
     )
 }
 
-const ToDo = () => {
+
     const [head] = useState([
         "Task",
         "Descirption",
@@ -73,26 +74,26 @@ const ToDo = () => {
         }
         loginUser()
 
-        const getTodos = async () => {
-            const tempBody = []
-            const { data } = await axios.get('/todo/gettodo')
-            data.forEach((todo) => {
-                if (todo.userMail === user?.data?.userMail) {
-                    const oneTodo = {
-                        id: todo._id,
-                        task: todo.task,
-                        description: todo.description,
-                        status: todo.status,
-                        duedate: todo.duedate
-                    }
-                    tempBody.push(oneTodo)
-                }
-            })
-            setBody(tempBody)
-        }
+      
         getTodos()
     }, [show])
-
+    const getTodos = async () => {
+        const tempBody = []
+        const { data } = await axios.get('/todo/gettodo')
+        data.forEach((todo) => {
+            if (todo.userMail === user?.data?.userMail) {
+                const oneTodo = {
+                    id: todo._id,
+                    task: todo.task,
+                    description: todo.description,
+                    status: todo.status,
+                    duedate: todo.duedate
+                }
+                tempBody.push(oneTodo)
+            }
+        })
+        setBody(tempBody)
+    }
     return (
         <div>
             <h2 className="page-header">ToDos</h2>

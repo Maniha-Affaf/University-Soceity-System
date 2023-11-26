@@ -7,6 +7,7 @@ const Hierarchy = () => {
 
   useEffect(() => {
     axios.get("/getUsers").then((res) => {
+      console.log(res.data);
       setUsers(res.data);
     });
   }, []);

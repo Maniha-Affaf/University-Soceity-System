@@ -19,7 +19,7 @@ var statusCards = [
   //   icon: "fa-solid fa-check",
   //   count: "0",
   //   title: "All Remaining ToDos",
-  //   link: "/todo",
+  //   link: "/events",
   // },
   {
     icon: "fa-solid fa-handshake",
@@ -95,9 +95,9 @@ const renderMeetingsBody = (item, index) => (
   </tr>
 );
 
-const renderTodosHead = (item, index) => <th key={index}>{item}</th>;
+const renderEventsHead = (item, index) => <th key={index}>{item}</th>;
 
-const renderTodosBody = (item, index) => (
+const renderEventsBody = (item, index) => (
   <tr key={index}>
     <td>{item.task}</td>
     <td>{item.description}</td>
@@ -108,33 +108,34 @@ const renderTodosBody = (item, index) => (
 const Dashboard = () => {
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
   const [user, setUser] = useState({});
-  const [todos, setTodos] = useState("0");
+
   const [meets, setMeets] = useState("0");
+  const [events, setEvents]=useState("0");
   const [allThemMeets, setAllThemMeets] = useState([]);
-  const [allThemTodos, setAllThemTodos] = useState([]);
+  const [allThemEvents, setAllThemEvents] = useState([]);
   const [showMeets, setShowMeets] = useState(false);
-  const [showTodos, setShowTodos] = useState(false);
+  const [showEvents, setShowEvents] = useState(false);
 
   const [meetsHead] = useState(["Planned By", "Topic", "Description"]);
   const [meetsBody, setMeetsBody] = useState([]);
 
-  const [TodosHead] = useState(["Task", "Descirption", "Due Date"]);
-  const [todosBody, setTodosBody] = useState([]);
+  const [EventsHead] = useState(["Task", "Descirption", "Due Date"]);
+  const [eventssBody, setEventsBody] = useState([]);
 
   useEffect(() => {
     const statusCardsCreator = async () => {
       const userFind = await axios.get("/getLoginUser");
       setUser(userFind.data);
       var icon;
-      var todoCount = 0;
-      const allTodos = await axios.get("/todo/gettodo");
-      setAllThemTodos(allTodos.data);
-      allTodos.data.forEach((todo) => {
-        todo.status === false &&
-          userFind.data.userMail === todo.userMail &&
-          todoCount++;
+      var eventCount = 0;
+      const allEvents = await axios.get("/event/getevents");
+      setAllThemEvents(allEvents.data);
+      allEvents.data.forEach((events) => {
+        events.status === false &&
+          userFind.data.userMail === events.userMail &&
+          eventCount++;
       });
-      setTodos(todoCount.toString());
+      setEvents(eventCount.toString());
 
       var meetCount = 0;
       const allMeets = await axios.get("/meet/getmeets");
@@ -168,15 +169,21 @@ const Dashboard = () => {
         },
         // {
         //   icon: "fa-solid fa-check",
-        //   count: todos,
+        //   count: eventss,
         //   title: "All Remaining ToDos",
-        //   link: "/todo",
+        //   link: "/events",
         // },
         {
           icon: "fa-solid fa-handshake",
           count: meets,
           title: "Upcoming Meets",
           link: "/meetings",
+        },
+        {
+          icon: "fa-solid fa-handshake",
+          count: events,
+          title: "Upcoming Event",
+          link: "/Events",
         },
         {
           icon: "bx bx-plus-circle",
@@ -187,7 +194,7 @@ const Dashboard = () => {
       ];
     };
     statusCardsCreator();
-  }, [todos, meets]);
+  }, [events, meets]);
 
   useEffect(() => {
     const getMeets = () => {
@@ -208,24 +215,24 @@ const Dashboard = () => {
   }, [showMeets]);
 
   useEffect(() => {
-    const getTodos = () => {
+    const getEvents = () => {
       const tempBody = [];
-      allThemTodos.forEach((todo) => {
-        if (todo.userMail === user.userMail) {
+      allThemEvents.forEach((events) => {
+        if (events.userMail === user.userMail) {
           const oneTodo = {
-            id: todo._id,
-            task: todo.task,
-            description: todo.description,
-            status: todo.status,
-            duedate: todo.duedate,
+            id: events._id,
+            task: events.task,
+            description: events.description,
+            status: events.status,
+            duedate: events.duedate,
           };
           tempBody.push(oneTodo);
         }
       });
-      setTodosBody(tempBody);
+      setEventsBody(tempBody);
     };
-    getTodos();
-  }, [showTodos]);
+    getEvents();
+  }, [showEvents]);
 
   return (
     <div>
@@ -302,28 +309,28 @@ const Dashboard = () => {
         </div>
         <div className="col-7">
           <div className="card">
-            <h2>Upcoming Todos</h2>
+            <h2>Upcoming Events</h2>
             <button
               className="button-primary"
               onClick={(e) => {
                 e.preventDefault();
-                setShowTodos(!showTodos);
+                setShowEvents(!showEvents);
               }}
             >
-              {showTodos ? "Hide" : "Show"}
+              {showEvents ? "Hide" : "Show"}
             </button>
-            {showTodos && (
+            {showEvents && (
               <div>
                 <div className="card__body">
                   <Table
-                    headData={TodosHead}
-                    renderHead={(item, index) => renderTodosHead(item, index)}
-                    bodyData={todosBody}
-                    renderBody={(item, index) => renderTodosBody(item, index)}
+                    headData={EventsHead}
+                    renderHead={(item, index) => renderEventsHead(item, index)}
+                    bodyData={eventssBody}
+                    renderBody={(item, index) => renderEventsBody(item, index)}
                   />
                 </div>
                 <button className="card__footer">
-                  <Link to="/todo">View all</Link>
+                  <Link to="/events">View all</Link>
                 </button>
               </div>
             )}

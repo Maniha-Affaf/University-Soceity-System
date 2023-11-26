@@ -15,16 +15,23 @@ const Topology = (props) => {
         }
         var edgeLength = 50
         const edger = (item) => {
+            
             if (item.userPri > 1) {
+                console.log(item);
                 const parPri = item.userPri - 1
                 const parArr = pars[parPri]
                 const randIn = Math.floor(Math.random() * parArr.length)
                 const parent = parArr[randIn]
+                // console.log(parent);
+                if(parent)
+                {
                 edges.push({
                     from: item.id, 
                     to: parent.id, 
                     length: edgeLength * (parPri)   
                 })
+                }
+                
             }
         }
         const noder = (item) => {

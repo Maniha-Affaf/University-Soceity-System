@@ -24,6 +24,10 @@ const meetingSchema = new mongoose.Schema({
     status: {
         type: Boolean,
         required: true
+    },
+    meetType:{
+        type:String,
+        required:true
     }
 })
 

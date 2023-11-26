@@ -10,5 +10,7 @@ router.get("/getmeets", meetingController.getMeetings)
 
 router.put("/updatemeet", meetingController.updateMeeting)
 
+// router.put("/editemeet", meetingController.editMeeting)
+
 
 module.exports = router

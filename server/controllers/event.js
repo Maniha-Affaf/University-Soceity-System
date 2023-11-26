@@ -17,6 +17,7 @@ const addEvent = async (req, res) => {
   const description = req.body.description;
   const stime = req.body.stime;
   const etime = req.body.etime;
+  const eventType=req.body.eventType;
   const status = false;
   const user = await UserModel.findOne({ userMail: req.body.by });
   //   console.log(user);
@@ -43,6 +44,7 @@ const addEvent = async (req, res) => {
     description: description,
     stime: stime,
     etime: etime,
+    eventType:eventType,
     status: status,
   });
 
@@ -68,6 +70,8 @@ const updateEvent = async (req, res) => {
       console.log("Event completed Woohoo 🎆!");
     }
   ).clone();
+  return res.status(200).send({ message: "Event completed Woohoo 🎆!" });
+
 };
 
 module.exports = {

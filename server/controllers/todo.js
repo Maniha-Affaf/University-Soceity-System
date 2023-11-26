@@ -42,6 +42,7 @@ const updateToDo = async (req, res) => {
         }
         console.log("ToDo Modified 🏀!")
     }).clone()
+    return res.status(200).send({ message: "Todoss completed Woohoo 🎆!" });
 }
 
 
