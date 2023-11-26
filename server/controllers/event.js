@@ -59,20 +59,45 @@ const addEvent = async (req, res) => {
   });
 };
 
+// const updateEvent = async (req, res) => {
+//   await EventModel.updateOne(
+//     { _id: req.body.id },
+//     { status: !req.body.status },
+//     (err, doc) => {
+//       if (err) {
+//         return console.log(err + " 🤐!");
+//       }
+//       console.log("Event completed Woohoo 🎆!");
+//     }
+//   ).clone();
+//   return res.status(200).send({ message: "Event completed Woohoo 🎆!" });
+
+// };
+
+
 const updateEvent = async (req, res) => {
+  const id = req.body.id;
+  const by = req.body.by;
+  const topic = req.body.topic;
+  const description = req.body.description;
+  const stime = req.body.stime;
+  const etime = req.body.etime;
+  const status = req.body.status;
+  const eventType = req.body.eventType;
+
   await EventModel.updateOne(
     { _id: req.body.id },
-    { status: !req.body.status },
+    { eventType, status, etime, stime, description, topic, by },
     (err, doc) => {
       if (err) {
         return console.log(err + " 🤐!");
       }
       console.log("Event completed Woohoo 🎆!");
+      return res.status(200).send({ message: "Event completed Woohoo 🎆!" });
     }
   ).clone();
-  return res.status(200).send({ message: "Event completed Woohoo 🎆!" });
-
 };
+
 
 module.exports = {
   getEvents,

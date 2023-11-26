@@ -18,7 +18,7 @@ const addMeeting = async (req, res) => {
   const stime = req.body.stime;
   const etime = req.body.etime;
   const status = req.body.status;
-  const meetType=req.body.meetType;
+  const meetType = req.body.meetType;
   const user = await UserModel.findOne({ userMail: req.body.by });
   //   console.log(user);
   if (user.userRole == "Team Member") {
@@ -33,7 +33,7 @@ const addMeeting = async (req, res) => {
     stime: stime,
     etime: etime,
     status: status,
-    meetType:meetType,
+    meetType: meetType,
   });
 
   await meet.save((err, doc) => {
@@ -92,7 +92,6 @@ const addMeeting = async (req, res) => {
 //   }
 // };
 
-
 const updateMeeting = async (req, res) => {
   const id = req.body.id;
   const by = req.body.by;
@@ -103,25 +102,21 @@ const updateMeeting = async (req, res) => {
   const status = req.body.status;
   const meetType = req.body.meetType;
 
-   await MeetingModel.updateOne(
-      { _id: req.body.id },
-      { data:{meetType,status,etime,stime,description,topic,by}},
-      (err, doc) => {
-        if (err) {
-          return console.log(err + " 🤐!");
-        }
-        console.log("Meeting completed Woohoo 🎆!");
-        return res.status(200).send({ message: "Meeting completed Woohoo 🎆!" });
+  await MeetingModel.updateOne(
+    { _id: req.body.id },
+    { meetType, status, etime, stime, description, topic, by },
+    (err, doc) => {
+      if (err) {
+        return console.log(err + " 🤐!");
       }
-    ).clone();
-
+      console.log("Meeting completed Woohoo 🎆!");
+      return res.status(200).send({ message: "Meeting completed Woohoo 🎆!" });
+    }
+  ).clone();
 };
-
-
 
 module.exports = {
   getMeetings,
   addMeeting,
   updateMeeting,
-
 };

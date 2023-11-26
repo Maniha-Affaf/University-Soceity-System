@@ -31,6 +31,33 @@ const Events = () => {
   const [eventType,setEventType]=useState("");
 
 
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [editedDetails, setEditedDetails] = useState({
+    id: "",
+    by: "",
+    topic: "",
+    description: "",
+    eventType: "",
+    stime: "",
+    etime: "",
+  });
+
+  const handleEdit = () => {
+    // Perform your edit logic here
+    // For example, you can call your updateEvent function
+    updateEvent(
+      editedDetails.id,
+      editedDetails.status,
+      editedDetails.topic,
+      editedDetails.description,
+      editedDetails.eventType,
+      editedDetails.stime,
+      editedDetails.etime
+    );
+
+    // Close the modal after editing
+    closeModal();
+  };
   const handleEventTypeChange = async (event) => {
     setEventType(event.target.value);
   };
@@ -46,13 +73,13 @@ const Events = () => {
      
     getEvents();
   }, [show]);
-  const updateEvent = async (id, status) => {
-    await axios.put("/event/updateevent", {
-      id: id,
-      status: status,
-    });
-    getEvents();
-  };
+  // const updateEvent = async (id, status) => {
+  //   await axios.put("/event/updateevent", {
+  //     id: id,
+  //     status: status,
+  //   });
+  //   getEvents();
+  // };
   
   const renderHead = (item, index) => <th key={index}>{item}</th>;
   
@@ -69,10 +96,38 @@ const Events = () => {
           checked={item.status && true}
           onChange={(e) => {
             e.preventDefault();
-            updateEvent(item.id, item.status);
+            updateEvent(
+              item.id,
+              item.status,
+              item.topic,
+              item.description,
+              item.eventType,
+              item.stime,
+              item.etime
+            );
             item.status = !item.status;
           }}
         />
+      </td>
+      <td>
+        <button
+          onClick={(e) => {
+            console.log("button clicked");
+            e.preventDefault();
+
+            openModal(
+              item.id,
+              item.status,
+              item.topic,
+              item.description,
+              item.eventType,
+              item.stime,
+              item.etime
+            );
+          }}
+        >
+          EDIT
+        </button>
       </td>
     </tr>
   );
@@ -98,6 +153,54 @@ const Events = () => {
       setBody(tempBody);
     };
 
+    const openModal = (
+      id,
+      status,
+      topic,
+      description,
+      eventType,
+      stime,
+      etime
+    ) => {
+      setEditedDetails({
+        id,
+        status,
+        topic,
+        description,
+        eventType,
+        stime,
+        etime,
+      });
+      setModalOpen(true);
+      console.log("Modal opened"); // Add this line
+    };
+  
+    const closeModal = () => {
+      setModalOpen(false);
+      console.log("Modal closed"); // Add this line
+    };
+  
+    const updateEvent = async (
+      id,
+      status,
+      topic,
+      description,
+      eventType,
+      stime,
+      etime
+    ) => {
+      await axios.put("/event/updateevent", {
+        id: id,
+        status: status,
+        topic: topic,
+        description: description,
+        eventType: eventType,
+        starttime: stime,
+        endtime: etime,
+      });
+      getEvents();
+    };
+  
  
 
   const pushEvent = async (by, topic, description, stime, etime, status) => {
@@ -114,7 +217,76 @@ const Events = () => {
   };
 
   return (
-    <div className="Meeting">
+    <div className="Event">
+       {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <label>
+              Topic:
+              <input
+                type="text"
+                value={editedDetails.topic}
+                onChange={(e) =>
+                  setEditedDetails({ ...editedDetails, topic: e.target.value })
+                }
+              />
+            </label>
+
+            <label>
+              Description:
+              <input
+                type="text"
+                value={editedDetails.description}
+                onChange={(e) =>
+                  setEditedDetails({
+                    ...editedDetails,
+                    description: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Event Type:
+              <input
+                type="text"
+                value={editedDetails.eventType}
+                onChange={(e) =>
+                  setEditedDetails({
+                    ...editedDetails,
+                    eventType: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Start Time:
+              <input
+                type="text"
+                value={editedDetails.stime}
+                onChange={(e) =>
+                  setEditedDetails({ ...editedDetails, stime: e.target.value })
+                }
+              />
+            </label>
+
+            <label>
+              End Time:
+              <input
+                type="text"
+                value={editedDetails.etime}
+                onChange={(e) =>
+                  setEditedDetails({ ...editedDetails, etime: e.target.value })
+                }
+              />
+            </label>
+
+            <button onClick={handleEdit}>Save Changes</button>
+            <button onClick={closeModal}>Cancel</button>
+          </div>
+        </div>
+      )}
       <h2>Events</h2>
       <br></br>
       <br></br>

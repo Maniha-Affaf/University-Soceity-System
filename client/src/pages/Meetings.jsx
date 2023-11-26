@@ -16,7 +16,6 @@ const Meetings = () => {
     "End Time",
     "Meet Type",
     "Status",
-
   ]);
   const [body, setBody] = useState([]);
   const [user, setUser] = useState({});
@@ -28,15 +27,11 @@ const Meetings = () => {
   const [date, setDate] = useState(new Date());
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
-  const [meetType,setMeetType]=useState("");
-
-
-
+  const [meetType, setMeetType] = useState("");
 
   const handleMeetTypeChange = async (event) => {
     setMeetType(event.target.value);
   };
-
 
   useEffect(() => {
     const loginUser = async () => {
@@ -44,35 +39,28 @@ const Meetings = () => {
     };
     loginUser();
 
-   
     getMeets();
   }, [show]);
 
   const renderHead = (item, index) => <th key={index}>{item}</th>;
 
-
-
-
   const [isModalOpen, setModalOpen] = useState(false);
   const [editedDetails, setEditedDetails] = useState({
-    id: '',
-    by: '',
-    topic: '',
-    description: '',
-    meetType: '',
-    stime: '',
-    etime: '',
+    id: "",
+    by: "",
+    topic: "",
+    description: "",
+    meetType: "",
+    stime: "",
+    etime: "",
   });
-
-
-
 
   const handleEdit = () => {
     // Perform your edit logic here
     // For example, you can call your updateMeet function
     updateMeet(
       editedDetails.id,
-      editedDetails.by,
+      editedDetails.status,
       editedDetails.topic,
       editedDetails.description,
       editedDetails.meetType,
@@ -83,11 +71,6 @@ const Meetings = () => {
     // Close the modal after editing
     closeModal();
   };
-
-
-
-
-
 
   const renderAllBody = (item, index) => (
     <tr key={index}>
@@ -102,57 +85,54 @@ const Meetings = () => {
           checked={item.status && true}
           onChange={(e) => {
             e.preventDefault();
-            updateMeet(item.id, item.status,item.topic, item.description, item.meetType,item.stime,item.etime);
+            updateMeet(
+              item.id,
+              item.status,
+              item.topic,
+              item.description,
+              item.meetType,
+              item.stime,
+              item.etime
+            );
             item.status = !item.status;
           }}
         />
       </td>
       <td>
         <button
-         onClick={(e)=>{
-          console.log("button clicked");
-        e.preventDefault();
-        openModal(item.id, item.by, item.topic, item.description, item.meetType, item.stime, item.etime);
-         }}>EDIT </button></td>
+          onClick={(e) => {
+            console.log("button clicked");
+            e.preventDefault();
+
+            openModal(
+              item.id,
+              item.status,
+              item.topic,
+              item.description,
+              item.meetType,
+              item.stime,
+              item.etime
+            );
+          }}
+        >
+          EDIT
+        </button>
+      </td>
     </tr>
   );
 
-
-  const Modal = ({ isModalOpen, closeModal, handleEdit, editedDetails }) => {
-    return ReactDOM.createPortal(
-      isModalOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            {/* Your form to edit details */}
-            {/* Populate the form with editedDetails */}
-            <label>
-              Topic:
-              <input
-                type="text"
-                value={editedDetails.topic}
-                onChange={(e) =>
-                  setEditedDetails({
-                    ...editedDetails,
-                    topic: e.target.value,
-                  })
-                }
-              />
-            </label>
-            {/* Repeat similar blocks for other fields */}
-            <button onClick={handleEdit}>Save Changes</button>
-            <button onClick={closeModal}>Cancel</button>
-          </div>
-        </div>
-      ),
-      document.body
-    );
-  };
-
-
-  const openModal = (id, by, topic, description, meetType, stime, etime) => {
+  const openModal = (
+    id,
+    status,
+    topic,
+    description,
+    meetType,
+    stime,
+    etime
+  ) => {
     setEditedDetails({
       id,
-      by,
+      status,
       topic,
       description,
       meetType,
@@ -160,137 +140,63 @@ const Meetings = () => {
       etime,
     });
     setModalOpen(true);
-    console.log('Modal opened'); // Add this line
+    console.log("Modal opened"); // Add this line
   };
-  
+
   const closeModal = () => {
     setModalOpen(false);
-    console.log('Modal closed'); // Add this line
+    console.log("Modal closed"); // Add this line
   };
 
-
-  {isModalOpen && (
-    <div className="modal">
-      <div className="modal-content">
-        {/* Your form to edit details */}
-        {/* Populate the form with editedDetails */}
-        <label>
-          Topic:
-          <input type="text" value={editedDetails.topic} onChange={(e) => setEditedDetails({ ...editedDetails, topic: e.target.value })} />
-        </label>
-
-        <label>
-        Topic:
-        <input 
-          type="text" 
-          value={editedDetails.topic} 
-          onChange={(e) => setEditedDetails({ ...editedDetails, topic: e.target.value })} 
-        />
-      </label>
-
-      <label>
-        Description:
-        <input 
-          type="text" 
-          value={editedDetails.description} 
-          onChange={(e) => setEditedDetails({ ...editedDetails, description: e.target.value })} 
-        />
-      </label>
-
-      <label>
-        Meet Type:
-        <input 
-          type="text" 
-          value={editedDetails.meetType} 
-          onChange={(e) => setEditedDetails({ ...editedDetails, meetType: e.target.value })} 
-        />
-      </label>
-
-      <label>
-        Start Time:
-        <input 
-          type="text" 
-          value={editedDetails.stime} 
-          onChange={(e) => setEditedDetails({ ...editedDetails, stime: e.target.value })} 
-        />
-      </label>
-
-      <label>
-        End Time:
-        <input 
-          type="text" 
-          value={editedDetails.etime} 
-          onChange={(e) => setEditedDetails({ ...editedDetails, etime: e.target.value })} 
-        />
-      </label>
-    
-        
-        <button onClick={handleEdit}>Save Changes</button>
-        <button onClick={closeModal}>Cancel</button>
-      </div>
-    </div>
-  )}
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  const updateMeet = async (id, status,topic,description,meetType,stime,etime) => {
-
+  const updateMeet = async (
+    id,
+    status,
+    topic,
+    description,
+    meetType,
+    stime,
+    etime
+  ) => {
     await axios.put("/meet/updatemeet", {
       id: id,
       status: status,
-      Topic :topic,
-      Description: description,
-      MeetType: meetType,
-      Starttime:stime,
-      endtime:etime
-
-
+      topic: topic,
+      description: description,
+      meetType: meetType,
+      starttime: stime,
+      endtime: etime,
     });
     getMeets();
   };
-
-
-
-
-
-
 
   const getMeets = async () => {
     const tempBody = [];
     const { data } = await axios.get("/meet/getmeets");
     data?.forEach((meet) => {
-
-        const oneMeet = {
-          id: meet._id,
-          by: meet.by,
-          topic: meet.topic,
-          description: meet.description,
-          stime: meet.stime,
-          etime: meet.etime,
-          status: meet.status,
-          meetType:meet.meetType
-        };
-        tempBody.push(oneMeet);
+      const oneMeet = {
+        id: meet._id,
+        by: meet.by,
+        topic: meet.topic,
+        description: meet.description,
+        stime: meet.stime,
+        etime: meet.etime,
+        status: meet.status,
+        meetType: meet.meetType,
+      };
+      tempBody.push(oneMeet);
       // }
     });
     setBody(tempBody);
   };
-  const pushMeet = async (by, topic, description, stime, etime, status,meetType) => {
+  const pushMeet = async (
+    by,
+    topic,
+    description,
+    stime,
+    etime,
+    status,
+    meetType
+  ) => {
     console.log(meetType);
     const data = await axios.post("/meet/addmeet", {
       by: by,
@@ -299,14 +205,83 @@ const Meetings = () => {
       stime: stime,
       etime: etime,
       status: status,
-      meetType:meetType,
+      meetType: meetType,
     });
     setError(data.data.message);
   };
 
   return (
     <div className="Meeting">
-      <h2>Meetings</h2>
+      {isModalOpen && (
+        <div className="modal">
+          <div className="modal-content">
+            <label>
+              Topic:
+              <input
+                type="text"
+                value={editedDetails.topic}
+                onChange={(e) =>
+                  setEditedDetails({ ...editedDetails, topic: e.target.value })
+                }
+              />
+            </label>
+
+            <label>
+              Description:
+              <input
+                type="text"
+                value={editedDetails.description}
+                onChange={(e) =>
+                  setEditedDetails({
+                    ...editedDetails,
+                    description: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Meet Type:
+              <input
+                type="text"
+                value={editedDetails.meetType}
+                onChange={(e) =>
+                  setEditedDetails({
+                    ...editedDetails,
+                    meetType: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Start Time:
+              <input
+                type="text"
+                value={editedDetails.stime}
+                onChange={(e) =>
+                  setEditedDetails({ ...editedDetails, stime: e.target.value })
+                }
+              />
+            </label>
+
+            <label>
+              End Time:
+              <input
+                type="text"
+                value={editedDetails.etime}
+                onChange={(e) =>
+                  setEditedDetails({ ...editedDetails, etime: e.target.value })
+                }
+              />
+            </label>
+
+            <button onClick={handleEdit}>Save Changes</button>
+            <button onClick={closeModal}>Cancel</button>
+          </div>
+        </div>
+      )}
+      ;<h2>Meetings</h2>
       <br></br>
       <br></br>
       <div className="card">
@@ -337,7 +312,6 @@ const Meetings = () => {
           </div>
         )}
       </div>
-      
       <div className="card">
         <h2>Schedule A Meeting</h2>
         <br></br>
@@ -385,56 +359,58 @@ const Meetings = () => {
             </div>
           </div>
 
-        <div className="col-4">
-        <div className="row">
-          
+          <div className="col-4">
+            <div className="row">
+              <div className="col-12">
+                <div className="card">
+                  <h3>Select a Time!</h3>
+                  <br></br>
+                  <form>
+                    <label htmlFor="stime">Starting Time:</label>
+                    <input
+                      type="time"
+                      onChange={(e) => {
+                        setStime(e.target.value);
+                        setError("");
+                      }}
+                      id="stime"
+                      name="stime"
+                    />
 
-          <div className="col-12">
-            <div className="card">
-              <h3>Select a Time!</h3>
-              <br></br>
-              <form>
-                <label htmlFor="stime">Starting Time:</label>
-                <input
-                  type="time"
-                  onChange={(e) => {
-                    setStime(e.target.value);
-                    setError("");
-                  }}
-                  id="stime"
-                  name="stime"
-                />
-
-                <label htmlFor="etime">Ending Time:</label>
-                <input
-                  type="time"
-                  onChange={(e) => {
-                    setEtime(e.target.value);
-                    setError("");
-                  }}
-                  id="etime"
-                  name="etime"
-                />
-              </form>
+                    <label htmlFor="etime">Ending Time:</label>
+                    <input
+                      type="time"
+                      onChange={(e) => {
+                        setEtime(e.target.value);
+                        setError("");
+                      }}
+                      id="etime"
+                      name="etime"
+                    />
+                  </form>
+                </div>
+              </div>
+              <div className="col-12">
+                <div className="card">
+                  <h3>Select Meeting Type</h3>
+                  <br />
+                  <form>
+                    <label htmlFor="meetingType">Choose a meeting type:</label>
+                    <select
+                      onChange={handleMeetTypeChange}
+                      id="meetingType"
+                      name="meetingType"
+                    >
+                      <option value="onsite">Onsite</option>
+                      <option value="online">Online</option>
+                    </select>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="col-12">
-            <div className="card">
-              <h3>Select Meeting Type</h3>
-              <br />
-              <form>
-                <label htmlFor="meetingType">Choose a meeting type:</label>
-                <select onChange={handleMeetTypeChange} id="meetingType" name="meetingType">
-                  <option value="onsite">Onsite</option>
-                  <option value="online">Online</option>
-                </select>
-              </form>
-           </div>
-          </div>
-          </div>
         </div>
-        </div>
-        
+
         <button
           className="button-primary"
           onClick={(e) => {
