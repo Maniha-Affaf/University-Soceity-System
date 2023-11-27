@@ -31,7 +31,7 @@ class App extends Component {
 
   pushUserToDB = async () => {
     const maps = {
-      "President": 1,
+      President: 1,
       "Vice President": 2,
       "Departmental Head": 3,
       "Team Lead": 4,

@@ -1,5 +1,6 @@
 const UserModel = require("../models/User");
 const joi = require("joi");
+const bcrypt = require("bcrypt");
 const passwordComplexity = require("joi-password-complexity");
 
 const getUsers = async (req, res) => {
@@ -31,7 +32,10 @@ const addUser = async (req, res) => {
       return res.status(400).send({ message: error.details[0].message });
     }
 
-    const passwordCheck = req.body.password === req.body.confirmedPassword;
+    const passwordCheck = comparePassword(
+      req.body.password,
+      req.body.confirmedPassword
+    );
     if (!passwordCheck) {
       console.log("Passwords don't match 😥!");
       return res.status(401).send({ message: "Passwords don't match!" });
@@ -65,9 +69,9 @@ const addUser = async (req, res) => {
     const userMail = req.body.email;
     const userPhone = req.body.phone;
     const userRole = req.body.role;
-    const userPassword = req.body.password;
+    const userPassword = await hashPassword(req.body.password);
     const current = req.body.current;
-
+    console.log(userPassword);
     const user = new UserModel({
       userPri: userPri,
       userName: userName,
@@ -79,11 +83,11 @@ const addUser = async (req, res) => {
     });
 
     await user.save((res, err, doc) => {
-      // if (err) {
-      // console.log(err + " 🤔!");
-      // } else {
-      console.log("New User Created 🎉!");
-      // }
+      if (err) {
+        console.log(err + " 🤔!");
+      } else {
+        console.log("New User Created 🎉!");
+      }
     });
     return res.send({ message: "New User created!" });
     // return res.status(200).send({ mesage: "New user created!" });
@@ -106,7 +110,10 @@ const authUser = async (req, res) => {
       console.log("Invalid Mail 🤦‍♂️!");
       return res.status(401).send({ message: "Invalid Mail!" });
     }
-    const validPassword = req.body.password === userFind.userPassword;
+    const validPassword = comparePassword(
+      req.body.password,
+      userFind.userPassword
+    );
     if (!validPassword) {
       console.log("Invalid Password 🥴!");
       return res.status(401).send({ message: "Invalid Password!" });
@@ -173,4 +180,30 @@ module.exports = {
   addUser,
   authUser,
   toggleLogin,
+};
+
+const saltRounds = 10; // You can adjust the number of salt rounds as needed
+
+// Function to hash a password
+const hashPassword = async (password) => {
+  try {
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Function to compare a password with its hash
+const comparePassword = async (password, hashPassword) => {
+  try {
+    console.log(password);
+    console.log(hashPassword);
+
+    const match = await bcrypt.compare(password, hashPassword);
+    return match;
+  } catch (error) {
+    throw error;
+  }
 };
