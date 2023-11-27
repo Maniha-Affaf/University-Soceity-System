@@ -36,13 +36,13 @@ const addUser = async (req, res) => {
       console.log("Passwords don't match 😥!");
       return res.status(401).send({ message: "Passwords don't match!" });
     }
-    if (req.body.role) {
+    if (req.body.role === "President") {
       const AdminFind = await UserModel.findOne({ userRole: "President" });
       if (AdminFind) {
         return res.status(409).send({ message: "President already exists!" });
       }
     }
-    if (req.body.role) {
+    if (req.body.role === "Departmental Head") {
       const AdminFind = await UserModel.findOne({
         userRole: "Departmental Head",
       });
