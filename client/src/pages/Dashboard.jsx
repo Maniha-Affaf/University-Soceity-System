@@ -109,8 +109,8 @@ const Dashboard = () => {
   const themeReducer = useSelector((state) => state.ThemeReducer.mode);
   const [user, setUser] = useState({});
 
-  const [meets, setMeets] = useState("0");
-  const [events, setEvents]=useState("0");
+  const [meets, setMeets] = useState([]);
+  const [events, setEvents] = useState([]);
   const [allThemMeets, setAllThemMeets] = useState([]);
   const [allThemEvents, setAllThemEvents] = useState([]);
   const [showMeets, setShowMeets] = useState(false);
@@ -175,19 +175,19 @@ const Dashboard = () => {
         // },
         {
           icon: "fa-solid fa-handshake",
-          count: meets,
+          // count: meets,
           title: "Upcoming Meets",
           link: "/meetings",
         },
         {
           icon: "fa-solid fa-handshake",
-          count: events,
+          // count: events,
           title: "Upcoming Event",
           link: "/Events",
         },
         {
           icon: "bx bx-plus-circle",
-          count: "?",
+          // count: "?",
           title: "Add Suggestion",
           link: "/suggest",
         },
